@@ -36,8 +36,8 @@ RUN rm ovpn.zip
 COPY ./vpn_login.txt /app/vpn_login.txt
 RUN cp vpn_login.txt ovpn_udp/
 RUN cp vpn_login.txt ovpn_tcp/
-RUN find ovpn_udp/ -type f -name "*nordvpn.com.udp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass /app/ovpn_udp/vpn_login.txt+'
-RUN find ovpn_tcp/ -type f -name "*nordvpn.com.tcp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass /app/ovpn_tcp/vpn_login.txt+'
+RUN find ovpn_udp/ -type f -name "*nordvpn.com.udp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass ovpn_udp/vpn_login.txt+'
+RUN find ovpn_tcp/ -type f -name "*nordvpn.com.tcp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass ovpn_tcp/vpn_login.txt+'
 RUN rm vpn_login.txt
 
 COPY ./initialize.py /app/initialize.py
@@ -46,7 +46,6 @@ COPY ./tor_runner.py /app/tor_runner.py
 COPY ./vpn_servers.json /app/vpn_servers.json
 COPY ./web_collector.py /app/web_collector.py
 COPY ./server.py /app/server.py
-
 
 EXPOSE 3000
 

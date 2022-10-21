@@ -1,9 +1,7 @@
 import platform
 import argparse
 
-
 from web_collector import ENTITY_WEB_COLLECTOR
-from initialize import banner
 from initialize import start
 from initialize import stop
 
@@ -26,6 +24,16 @@ from initialize import stop
 ## -- iOS                                        ##
 ###################################################
 
+def banner():
+    print(r"""
+             _ _____      |                 
+   ___ ___ _| |   __|___ _|_ ___ ___ ___ ___ 
+  |  _| -_| . |__   | ---[o]--- | . | -_|  _|
+  |_| |___|___|_____|_|_|_|_|___|  _|___|_|  
+                          |     |_|          
+    """)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='redSnooper')
 
@@ -35,6 +43,9 @@ def parse_args():
                         help='VPN country [SK/FR/US] (required if VPN is selected)')
     parser.add_argument('-u', '--user-agent', metavar="OPTION", default="Desktop",
                         help='user agent [Desktop/Android/iOS] (default: Desktop)')
+    # TODO
+    parser.add_argument('-v', '--verbosity', metavar="LEVEL", default="0",
+                        help='redirect chain verbosity [0/1] (default: 0)')
 
     args = parser.parse_args()
     return args

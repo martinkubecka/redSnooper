@@ -29,13 +29,6 @@ CORS(app)
 ## -- iOS                                        ##
 ###################################################
 
-# start(network_option, vpn_country, user_agent_host)
-network_option = "MOBILE_DATA"
-vpn_country = "France"  # MAKE DEFAULT
-user_agent_host = "Desktop"
-web_collector = start(network_option, vpn_country, user_agent_host)
-
-
 @app.route('/status', methods=['GET'])
 def status():
     return 'I LIVE'
@@ -105,8 +98,12 @@ def tarang():
 # -------------------------------------- TESTING --------------------------------------
 @app.route('/test', methods=['GET'])
 def test_crawl():
-    web_collector.crawl(
-        "https://webhook.site/23233635-6f3f-4775-926e-f5d36881a269")
+    # start(network_option, vpn_country, user_agent_host)
+    network_option = "MOBILE_DATA"
+    vpn_country = "France"  # MAKE DEFAULT
+    user_agent_host = "Desktop"
+    web_collector = start(network_option, vpn_country, user_agent_host)
+    web_collector.crawl("https://webhook.site/68370783-ead5-4adc-90de-279324b5c9e3")
     stop(web_collector, network_option)
     return "TEST DONE"
 # -------------------------------------------------------------------------------------
