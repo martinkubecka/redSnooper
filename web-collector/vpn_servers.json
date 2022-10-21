@@ -1,0 +1,63 @@
+{
+    "vpn_servers":
+        {
+            "Slovakia": [
+                "/app/ovpn_tcp/sk40.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk41.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk42.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk43.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk47.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk48.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk49.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk50.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk51.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk53.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk55.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk56.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk57.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk58.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/sk59.nordvpn.com.tcp.ovpn"
+            ],
+            "France": [
+                "/app/ovpn_tcp/fr537.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr538.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr539.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr540.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr541.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr542.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr543.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr544.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr545.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr546.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr547.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr548.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr549.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr550.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr551.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/fr552.nordvpn.com.tcp.ovpn"
+            ],
+            "United_States": [
+                "/app/ovpn_tcp/us9578.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9579.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9580.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9581.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9582.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9583.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9584.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9585.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9586.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9587.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9588.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9590.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9591.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9592.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9593.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9594.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9595.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9596.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9597.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9598.nordvpn.com.tcp.ovpn",
+                "/app/ovpn_tcp/us9599.nordvpn.com.tcp.ovpn"
+            ]
+        }
+}
