@@ -31,7 +31,7 @@ def parse_args():
 
     parser.add_argument('-n', '--network', metavar="OPTION", default="MOBILE",
                         help='network configuration option [MOBILE/VPN/TOR] (default: MOBILE)')
-    parser.add_argument('-c', '--country', metavar="COUNTRY",
+    parser.add_argument('-c', '--country', metavar="COUNTRY", default="France",
                         help='VPN country [SK/FR/US] (required if VPN is selected)')
     parser.add_argument('-u', '--user-agent', metavar="OPTION", default="Desktop",
                         help='user agent [Desktop/Android/iOS] (default: Desktop)')
@@ -56,13 +56,19 @@ def main():
     vpn_country = args.country
     user_agent_host = args.user_agent
 
-    if network_option == "VPN" and vpn_country is None:
-        print(f"[!] Selecting server country is required for VPN network option (use --country [SK/FR/US])")
-        print("\nExiting program ...\n")
-        exit(1)
-
     if network_option == "MOBILE":
         network_option = "MOBILE_DATA"
+
+    if network_option == "VPN":
+        if vpn_country == "SK":
+            vpn_country = "Slovakia"
+        elif vpn_country == "FR":
+            vpn_country = "France"
+        elif vpn_country == "US":
+            vpn_country = "United_States"
+        else:
+            print(f"[!] Invalid country was selected for the VPN server")
+            print(f"[*] Defaulting to 'France'")
 
     web_collector = start(network_option, vpn_country, user_agent_host)
 

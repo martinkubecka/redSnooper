@@ -122,26 +122,22 @@ class ENTITY_WEB_COLLECTOR:
 
                 vpn_servers = get_vpn_servers()
 
-                if self.vpn_country is None:
-                    print(f"[!] Country for VPN server was not selected")
-                    print(f"[*] Defaulting to '{self.default_vpn_country}'")
-
-                elif self.vpn_country == "Slovakia":
+                if self.vpn_country == "Slovakia":
                     sk_vpn_list = vpn_servers['vpn_servers']['Slovakia']
-                    randodm_vpn_server = random.choice(sk_vpn_list)
+                    random_vpn_server = random.choice(sk_vpn_list)
 
                 elif self.vpn_country == "France":
                     fr_vpn_list = vpn_servers['vpn_servers']['France']
-                    randodm_vpn_server = random.choice(fr_vpn_list)
+                    random_vpn_server = random.choice(fr_vpn_list)
 
                 elif self.vpn_country == "United_States":
                     us_vpn_list = vpn_servers['vpn_servers']['United_States']
-                    randodm_vpn_server = random.choice(us_vpn_list)
+                    random_vpn_server = random.choice(us_vpn_list)
 
                 print(
                     f"[*] Connecting to '{self.vpn_country}'")
-                # connect_cmd = f"openvpn --daemon --config {randodm_vpn_server} &"
-                connect_cmd = f"sudo openvpn --daemon --config {randodm_vpn_server} &"
+                # connect_cmd = f"openvpn --daemon --config {random_vpn_server} &"
+                connect_cmd = f"sudo openvpn --daemon --config {random_vpn_server} &"
                 os.system(connect_cmd)
 
         elif network_option == "TOR":
@@ -162,12 +158,12 @@ class ENTITY_WEB_COLLECTOR:
     def stop_network(self):
         if self.network_option == "VPN":
             print(f"[*] Closing network connection via VPN ...\n")
-            os.system("pkill -9 openvpn")
-            # os.system("sudo pkill -9 openvpn")
+            # os.system("pkill -9 openvpn")
+            os.system("sudo pkill -9 openvpn")
         if self.network_option == "TOR":
             print(f"[*] Closing network connection via Tor ...\n")
-            os.system("pkill -9 tor")
-            # os.system("sudo pkill -9 tor")
+            # os.system("pkill -9 tor")
+            os.system("sudo pkill -9 tor")
 
     def check_ip(self):
         ip_check_urls = ["https://api.myip.com",

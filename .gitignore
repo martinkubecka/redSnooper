@@ -5,5 +5,7 @@ web-collector/.config.yml
 web-collector/geckodriver.log
 web-collector/response.har
 web-collector/vpn_login.txt
+web-collector/ovpn_tcp
+web-collector/ovpn_udp
 web-collector/tor_testing.py
 
