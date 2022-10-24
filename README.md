@@ -1,30 +1,31 @@
 <p align="center">
 <img src="https://github.com/martinkubecka/redSnooper/blob/main/docs/banner.png" alt="Logo">
-<p align="center"><b>redirect chain snooper</b><br>
+<p align="center"><b>Redirect chain analysis tool with random user agents supporting VPN and TOR as a network configuration.</b><br>
 </p>
 
 ---
-## Table of Contents
-
-
-1. Local version
-    - Pre-requisites
-        - Software
-        - VPN configuration
-        - Firefox (gecko) driver
-        - Virtual environment
-    - Usage
-
-2. Docker version
-    - Pre-requisites
-        - Docker compose
-    - Usage
-
+**Table of Contents**
+- [Local version](#local-version)
+  - [Pre-requisites](#pre-requisites)
+  - [Software](#software)
+  - [VPN configuration](#vpn-configuration)
+  - [Firefox (gecko) driver](#firefox-gecko-driver)
+    - [Virtual environment](#virtual-environment)
+  - [Usage](#usage)
+    - [Examples](#examples)
+- [Docker version](#docker-version)
+  - [Pre-requisites](#pre-requisites-1)
+    - [Docker](#docker)
+    - [Docker Compose](#docker-compose)
+    - [VPN configuration](#vpn-configuration-1)
+  - [Usage](#usage-1)
 
 ---
 ## Local version
 
 ### Pre-requisites
+
+- clone this project with the following command
 
 ```
 $ git clone <URL>
@@ -32,9 +33,14 @@ $ git clone <URL>
 
 ### Software
 
-- tor, openvpn
+- user your package manager to install [Tor](https://community.torproject.org/onion-services/setup/install/) and [OpenVPN](https://community.openvpn.net/openvpn/wiki/HOWTO#InstallingOpenVPN)
 
 ### VPN configuration
+
+1. get a [NordVPN](https://nordvpn.com/) account
+2. download and unzip NordVPN configuration files for OpenVPN manual setup
+3. create 'vpn_login.txt' file in 'web-collector' directory and put your NordVPN credentials (email and password) on the separate lines
+4. run the two `find` commands below to add your 'vpn_login.txt' authentication file to the OpenVPN configuration files
 
 ```
 $ cd <DIR/web-collector>
@@ -54,18 +60,26 @@ web-collector $ rm vpn_login.txt
 
 ### Firefox (gecko) driver
 
+1. download the latest release of **geckodriver** from https://github.com/mozilla/geckodriver/releases
+2. extract the file
+3. make the file executable
+4. move the **geckodriver** to the `/usr/local/bin/` directory  
+
 ```
-TODO
+$ wget https://github.com/mozilla/geckodriver/releases/download/v0.*.*/geckodriver-v0.*.*-linux64.tar.gz
+$ tar -xvzf geckodriver* 
+$ chmod +x geckodriver
+$ sudo mv geckodriver /usr/local/bin/
 ```
 
 #### Virtual environment
 
-1. If pip is not in your system
-2. Then install virtualenv
-3. Now check your installation
-4. Inside the projcet directory create a virtual environment called `venv`
-5. Activate it by using the following command
-6. You can deactivate the virtual environment from the parent folder of `venv` directory
+1. use your package manager to install `python-pip` if it is not present on your system
+3. install `virtualenv`
+4. verify installation by checking the `virtualenv` version
+5. inside the project directory create a virtual environment called `venv`
+6. activate it by using the `source` command
+7. you can deactivate the virtual environment from the parent folder of `venv` directory with the `deactivate` command
 
 ```
 $ sudo apt-get install python-pip
@@ -79,34 +93,44 @@ $ deactivate
 ### Usage
 
 ```
-usage: main.py [-h] [-n OPTION] [-c COUNTRY] [-u OPTION] [-v LEVEL]
+usage: main.py [-h] -u URL [-n OPTION] [-c COUNTRY] [-a OPTION] [-v LEVEL]
 
-redSnooper
+Redirect chain analysis tool with random user agents supporting VPN and TOR as a network configuration
 
 options:
   -h, --help            show this help message and exit
+  -u URL, --url URL     URL for analysis (use double quotes)
   -n OPTION, --network OPTION
                         network configuration option [MOBILE/VPN/TOR] (default: MOBILE)
   -c COUNTRY, --country COUNTRY
                         VPN country [SK/FR/US] (required if VPN is selected)
-  -u OPTION, --user-agent OPTION
+  -a OPTION, --user-agent OPTION
                         user agent [Desktop/Android/iOS] (default: Desktop)
   -v LEVEL, --verbosity LEVEL
                         redirect chain verbosity [0/1] (default: 0)
+
 ```
 
-- [Mobile Data example](https://github.com/martinkubecka/redSnooper/blob/main/docs/mobile_data_example.md)
-- [VPN example](https://github.com/martinkubecka/redSnooper/blob/main/docs/vpn_example.md)
-- [TOR example](https://github.com/martinkubecka/redSnooper/blob/main/docs/tor_example.md)
+#### Examples
+
+- [Mobile Data](https://github.com/martinkubecka/redSnooper/blob/main/docs/mobile_data_example.md)
+- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/vpn_example.md)
+- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/tor_example.md)
 
 ---
 ## Docker version
 
 ### Pre-requisites
 
-### Docker
+- clone this project with the following command
 
-- download docker
+```
+$ git clone <URL>
+```
+
+#### Docker
+
+- user your package manager to install [Docker](https://docs.docker.com/engine/install/)
 
 #### Docker Compose
 
@@ -122,9 +146,16 @@ $ sudo mv docker-compose /usr/local/bin/
 $ docker-compose --version
 ```
 
+#### VPN configuration
+
+- get a [NordVPN](https://nordvpn.com/) account
+
+
 ### Usage
 
 - run `docker-compose up -d` command inside the `readSnooper` directory where the `docker-compose.yml` file is located
-- run `curl http://127.0.0.1:3000/status` to check verify if the setup was successful
+- run `curl http://127.0.0.1:3000/status` to verify if the container is running
+
+> TODO ?Flask?
 
 ---

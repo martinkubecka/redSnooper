@@ -1,11 +1,13 @@
 import platform
 import argparse
+from colorama import Fore
 
-from web_collector import ENTITY_WEB_COLLECTOR
 from initialize import start
 from initialize import stop
 
 
+###################################################
+## url                                           ##
 ###################################################
 ## network_option                                ##
 ## -- MOBILE_DATA                                ##
@@ -23,27 +25,35 @@ from initialize import stop
 ## -- Android                                    ##
 ## -- iOS                                        ##
 ###################################################
+## verbosity                                     ##
+## -- level [0/1]                                ##
+###################################################
+
+# WEBHOOK : https://webhook.site/75d7b590-e9e9-4554-a483-99cc8fa7eb6d
+
 
 def banner():
-    print(r"""
-             _ _____      |                 
-   ___ ___ _| |   __|___ _|_ ___ ___ ___ ___ 
-  |  _| -_| . |__   | ---[o]--- | . | -_|  _|
-  |_| |___|___|_____|_|_|_|_|___|  _|___|_|  
+    print(f"""
+{Fore.RED}             _ {Fore.RESET}_____      |                 
+{Fore.RED}   ___ ___ _| |{Fore.RESET}   __|___ _|_ ___ ___ ___ ___ 
+{Fore.RED}  |  _| -_| . |{Fore.RESET}__   | ---[o]--- | . | -_|  _|
+{Fore.RED}  |_| |___|___|{Fore.RESET}_____|_|_|_|_|___|  _|___|_|  
                           |     |_|          
     """)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='redSnooper')
+    parser = argparse.ArgumentParser(
+        description='Redirect chain analysis tool with random user agents supporting VPN and TOR as a network configuration')
 
+    parser.add_argument('-u', '--url', metavar="URL", required=True,
+                        help='URL for analysis (use double quotes)')
     parser.add_argument('-n', '--network', metavar="OPTION", default="MOBILE",
                         help='network configuration option [MOBILE/VPN/TOR] (default: MOBILE)')
     parser.add_argument('-c', '--country', metavar="COUNTRY", default="France",
                         help='VPN country [SK/FR/US] (required if VPN is selected)')
-    parser.add_argument('-u', '--user-agent', metavar="OPTION", default="Desktop",
+    parser.add_argument('-a', '--user-agent', metavar="OPTION", default="Desktop",
                         help='user agent [Desktop/Android/iOS] (default: Desktop)')
-    # TODO
     parser.add_argument('-v', '--verbosity', metavar="LEVEL", default="0",
                         help='redirect chain verbosity [0/1] (default: 0)')
 
@@ -78,13 +88,16 @@ def main():
         elif vpn_country == "US":
             vpn_country = "United_States"
         else:
-            print(f"[!] Invalid country was selected for the VPN server")
-            print(f"[*] Defaulting to 'France'")
+            # defaulting to France
+            vpn_country = "France"
 
-    web_collector = start(network_option, vpn_country, user_agent_host)
+    verbosity = args.verbosity
 
-    web_collector.crawl(
-        "https://webhook.site/68370783-ead5-4adc-90de-279324b5c9e3")
+    web_collector = start(network_option, vpn_country,
+                          user_agent_host, verbosity)
+
+    url = args.url
+    web_collector.crawl(url)
 
     stop(web_collector, network_option)
 

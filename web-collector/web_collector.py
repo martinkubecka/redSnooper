@@ -1,18 +1,3 @@
-# selenium, puppeteer, bablosoft bas [https://thehackernews.com/2022/05/hackers-increasingly-using-browser.html]
-
-############################### UNUSED IMPORTS ###############################
-# import sys
-# import time
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.remote.webelement import WebElement
-# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-# from selenium.webdriver.common.keys import Keys
-# from selenium.webdriver.chrome.options import Options as chrome_options
-#from selenium import webdriver
-#from PIL import Image
-#import pytesseract
-###############################################################################
-
 import os
 import re
 import sys
@@ -21,6 +6,8 @@ import yaml
 import random
 import shutil
 import requests
+import tldextract
+from colorama import Fore
 from seleniumwire import webdriver
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import SoftwareName, OperatingSystem
@@ -28,7 +15,6 @@ from random_user_agent.params import SoftwareName, OperatingSystem
 from tor_runner import TorClient
 
 # TODO : change printing errors to logger
-# TODO : IMPLEMENT USER AGENTS TO REQUESTS !!!!!
 
 
 def get_random_user_agent(user_agent_host):
@@ -40,7 +26,7 @@ def get_random_user_agent(user_agent_host):
     elif user_agent_host == "iOS":
         host_os = OperatingSystem.IOS.value
     else:
-        print(f"[!] Invalid USER AGENT")
+        print(f"{Fore.RED}[!] Invalid USER AGENT{Fore.RESET}")
         print(f"[*] Defaulting to Dektop-Windows ...")
         host_os = OperatingSystem.WINDOWS.value
 
@@ -88,11 +74,24 @@ def load_config():
     return config
 
 
+def application_mode():
+    if os.path.exists("/.dockerenv"):
+        if os.path.isdir("/app"):
+            return True
+    return False
+
+
+def get_domain_whitelist():
+    with open('domains.txt', 'r') as file:
+        domains = file.read().splitlines()
+    return domains
+
+
 class ENTITY_WEB_COLLECTOR:
-    def __init__(self, network_option, user_agent_host, vpn_country):
+    def __init__(self, network_option, user_agent_host, vpn_country, verbosity):
         self.network_option = network_option   # "MOBILE_DATA", "VPN", "TOR"
         self.proxies = None
-        self.user_agent_host = get_random_user_agent(
+        self.user_agent = get_random_user_agent(
             user_agent_host)    # "Desktop", "Android", "iOS"
         self.vpn_country = vpn_country
         self.default_vpn_country = "France"
@@ -100,6 +99,9 @@ class ENTITY_WEB_COLLECTOR:
         self.tor = None
         self.socks_port = None
         self.driver = None
+        self.verbosity = verbosity
+        self.docker_mode = application_mode()
+        self.domain_whitelist = get_domain_whitelist()
 
     def initialize_network(self):
         network_option = self.network_option
@@ -114,11 +116,12 @@ class ENTITY_WEB_COLLECTOR:
             is_vpn_installed = is_program_installed("openvpn")
 
             if not is_vpn_installed:
-                print(f"\n[!] OpenVPN is not installed on your system\n")
+                print(
+                    f"\n{Fore.RED}[!] OpenVPN is not installed on your system{Fore.RESET}\n")
                 print("\nExiting program ...\n")
                 exit(1)
             else:
-                print(f"[*] OpenVPN is installed")
+                print(f"{Fore.GREEN}[*] OpenVPN is installed{Fore.RESET}")
 
                 vpn_servers = get_vpn_servers()
 
@@ -134,36 +137,58 @@ class ENTITY_WEB_COLLECTOR:
                     us_vpn_list = vpn_servers['vpn_servers']['United_States']
                     random_vpn_server = random.choice(us_vpn_list)
 
-                print(
-                    f"[*] Connecting to '{self.vpn_country}'")
-                # connect_cmd = f"openvpn --daemon --config {random_vpn_server} &"
-                connect_cmd = f"sudo openvpn --daemon --config {random_vpn_server} &"
+                try:
+                    print(
+                        f"[*] Connecting to '{self.vpn_country}'")
+
+                    if self.docker_mode:
+                        connect_cmd = f"openvpn --daemon --config {random_vpn_server} &"
+                    else:
+                        connect_cmd = f"sudo openvpn --daemon --config {random_vpn_server} &"
+                except:
+                    print(
+                        f"{Fore.RED}[!] Error encountered while running '{connect_cmd}'{Fore.RESET}")
+                    self.stop_network()
+                    print(f"\nExiting program ...\n")
                 os.system(connect_cmd)
 
         elif network_option == "TOR":
             print("[*] Using TOR for network configuration")
+
+            print(f"\n[*] Checking if Tor is installed on your system")
             is_tor_installed = is_program_installed("tor")
 
             if not is_tor_installed:
-                print(f"\n[!] Tor is not installed on your system\n")
+                print(
+                    f"\n{Fore.RED}[!] Tor is not installed on your system{Fore.RESET}\n")
                 print("\nExiting program ...\n")
                 exit(1)
             else:
-                print(f"[*] Tor is installed\n")
+                print(f"{Fore.GREEN}[*] Tor is installed{Fore.RESET}\n")
                 self.tor = TorClient()
                 self.proxies = self.tor.proxies
                 self.socks_port = self.tor.socks_port
-                self.tor.start_tor()
+                try:
+                    self.tor.start_tor()
+                except:
+                    print(
+                        f"{Fore.RED}[!] Error encountered while establishing a Tor circuit{Fore.RESET}")
+                    self.stop_network()
+                    print(f"\nExiting program ...\n")
 
     def stop_network(self):
         if self.network_option == "VPN":
             print(f"[*] Closing network connection via VPN ...\n")
-            # os.system("pkill -9 openvpn")
-            os.system("sudo pkill -9 openvpn")
+            if self.docker_mode:
+                os.system("pkill -9 openvpn")
+            else:
+                os.system("sudo pkill -9 openvpn")
         if self.network_option == "TOR":
             print(f"[*] Closing network connection via Tor ...\n")
-            # os.system("pkill -9 tor")
-            os.system("sudo pkill -9 tor")
+            if self.docker_mode:
+                os.system("pkill -9 tor")
+            else:
+                os.system("sudo pkill -9 tor")
 
     def check_ip(self):
         ip_check_urls = ["https://api.myip.com",
@@ -178,7 +203,7 @@ class ENTITY_WEB_COLLECTOR:
 
             if status != requests.codes.ok:
                 print(
-                    f'\n[!] Error encountered with Status Code: {status} while checking the current IP\n')
+                    f'\n{Fore.RED}[!] Error encountered with Status Code: {status} while checking the current IP{Fore.RESET}\n')
                 sys.exit(5)
 
             data = json.loads(response.content.decode("utf-8"))
@@ -192,28 +217,32 @@ class ENTITY_WEB_COLLECTOR:
                     f"[*] Your current IP address is {current_ip} and country is {current_country}")
             else:
                 print(
-                    f"[!] IP address {current_ip} is not valid or can not be checked")
+                    f"{Fore.RED}[!] IP address {current_ip} is not valid or can not be checked{Fore.RESET}")
                 sys.exit(1)
 
             if forbidden_ip_prefix in current_ip:
                 print(
-                    f"\n[!] NOT USING MOBILE DATA / VPN / TOR IS STRICTLY FORBIDDEN")
+                    f"\n{Fore.RED}[!] NOT USING MOBILE DATA / VPN / TOR IS STRICTLY FORBIDDEN{Fore.RESET}")
                 print(f"\nExiting program ...\n")
                 sys.exit(1)
 
             return current_country
 
         except:
-            print(f"[!] Error encountered while fetching current IP")
+            print(
+                f"{Fore.RED}[!] Error encountered while fetching current IP{Fore.RESET}")
+            self.stop_network()
             print(f"\nExiting program ...\n")
             sys.exit(1)
 
     def initialize_driver(self):
-        print(f"\n[*] Initializing webdriver")
+        print(
+            f"\n[*] Initializing webdriver with '{self.user_agent}' user agent")
 
         firefox_options = webdriver.FirefoxOptions()
         firefox_options.add_argument('--headless')
-        firefox_options.set_preference('general.useragent.override', '')
+        firefox_options.set_preference(
+            'general.useragent.override', self.user_agent)
 
         if self.network_option == "TOR":
             print(f"[*] Webdriver using proxy '{self.proxies['http']}'")
@@ -230,44 +259,49 @@ class ENTITY_WEB_COLLECTOR:
             seleniumwire_options = {'enable_har': True}
 
         try:
-            # self.driver = webdriver.Firefox(
-            #     executable_path='/usr/bin/geckodriver',
-            #     options=firefox_options,
-            #     seleniumwire_options=seleniumwire_options
-            # )
             self.driver = webdriver.Firefox(
                 options=firefox_options,
                 seleniumwire_options=seleniumwire_options
             )
 
-            print(f"[*] Webdriver was successfully initialized\n")
+            print(
+                f"{Fore.GREEN}[*] Webdriver was successfully initialized{Fore.RESET}\n")
         except Exception as e:
-            print(f"[!] Webdriver initialization failed with {str(e)}\n")
+            print(
+                f"{Fore.RED}[!] Webdriver initialization failed with {str(e)}{Fore.RESET}\n")
 
     def destroy_driver(self):
         print(f"\n[*] Webdriver destruction started")
         try:
             self.driver.close()
-            print(f"[*] Webdriver was successfully destroyed\n")
+            print(
+                f"{Fore.GREEN}[*] Webdriver was successfully destroyed{Fore.RESET}\n")
         except Exception as e:
-            print(f"[!] Webdriver destruction failed with {str(e)}\n")
+            print(
+                f"{Fore.RED}[!] Webdriver destruction failed with {str(e)}{Fore.RESET}\n")
 
     def crawl(self, url):
         self.driver.get(url)
 
-        print(f"[*] REDIRECT CHAIN")
+        print(f"{Fore.YELLOW}[*] REDIRECT CHAIN{Fore.RESET}")
+
+        redirect_chain = []
         for request in self.driver.requests:
             if request.response:
-                if not "mozilla" in request.url:
+                if self.verbosity == "0":   # filter out valid domains
+                    _, domain, _ = tldextract.extract(request.url)
+                    if not any(domain in entry for entry in self.domain_whitelist):
+                        print(request.url)
+                        redirect_chain.append(request.url)
+                else: # print all the entries from the redirect chain
                     print(request.url)
+                    redirect_chain.append(request.url)
 
+        print(f"\n[*] Writing redirect chain URLs to a file")
+        with open('redirect_chain_urls.txt', 'w') as chain_file:
+            for entry in redirect_chain:
+                chain_file.write(f"{entry}\n")
+
+        print(f"[*] Writing captured data to a HAR file")
         with open('response.har', 'w') as har_file:
             print(self.driver.har, file=har_file)
-
-            # request_counter = 0
-
-            # for request in self.driver.requests:
-            #     request_counter = request_counter + 1
-            #     if request.response:
-            #         with open('_'.join(str(request_counter), request.url.split('/')[2], request.response.status_code), 'w') as out_file:
-            #             print(request.response.body, file=out_file)

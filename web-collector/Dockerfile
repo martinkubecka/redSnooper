@@ -25,6 +25,7 @@ RUN pip install random_user_agent
 RUN pip install requests
 RUN pip install stem
 RUN pip install PyYAML
+RUN pip install colorama
 
 # install OpenVPN
 RUN apk add openvpn
@@ -46,6 +47,7 @@ COPY ./tor_runner.py /app/tor_runner.py
 COPY ./vpn_servers.json /app/vpn_servers.json
 COPY ./web_collector.py /app/web_collector.py
 COPY ./server.py /app/server.py
+COPY ./domains.txt /app/domains.txt
 
 EXPOSE 3000
 

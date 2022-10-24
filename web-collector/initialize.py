@@ -4,6 +4,8 @@ from web_collector import ENTITY_WEB_COLLECTOR
 
 
 ###################################################
+## url                                           ##
+###################################################
 ## network_option                                ##
 ## -- MOBILE_DATA                                ##
 ## -- VPN                                        ##
@@ -20,11 +22,14 @@ from web_collector import ENTITY_WEB_COLLECTOR
 ## -- Android                                    ##
 ## -- iOS                                        ##
 ###################################################
+## verbosity                                     ##
+## -- level [0/1]                                ##
+###################################################
 
 
-def start(network_option, vpn_country, user_agent_host):
+def start(network_option, vpn_country, user_agent_host, verbosity):
     web_collector = ENTITY_WEB_COLLECTOR(
-        network_option, user_agent_host, vpn_country)
+        network_option, user_agent_host, vpn_country, verbosity)
     web_collector.initialize_network()
     time.sleep(5)
 
@@ -50,15 +55,5 @@ def stop(web_collector, network_option):
     web_collector.stop_network()
     time.sleep(5)
 
-    # NOTE : Checking IP after terminating TOR results to ERROR while fetching the current IP
     if network_option == "VPN":
         web_collector.check_ip()
-
-
-####################################################################################
-####################################################################################
-####################################################################################
-# TESTING outside of Docker container
-# -- CHECKLIST
-# [1] UNCOMMENT 'kill' COMMANDS IN 'stop_network()'
-# [2] UNCOMMENT 'webdriver.Firefox' in 'initialize_driver()'

@@ -8,4 +8,5 @@ web-collector/vpn_login.txt
 web-collector/ovpn_tcp
 web-collector/ovpn_udp
 web-collector/tor_testing.py
+web-collector/redirect_chain_urls.txt
 

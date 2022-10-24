@@ -5,3 +5,5 @@ stem
 flask
 flask-cors
 PyYAML
+colorama
+tldextract
