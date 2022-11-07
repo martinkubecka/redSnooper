@@ -4,20 +4,23 @@
 </p>
 
 ---
-**Table of Contents**
-- [Pre-requisites](#pre-requisites)
-  - [Software](#software)
-  - [VPN configuration](#vpn-configuration)
-  - [Firefox (gecko) driver](#firefox-gecko-driver)
-  - [Virtual environment](#virtual-environment)
-- [Usage](#usage)
-  - [Redirect Chain Examples](#redirect-chain-examples)
-  - [Check HTTP Status Code Examples](#check-http-status-code-examples)
-- [To-Do](#to-do)
+<h2 id="table-of-contents">Table of Contents</h2>
+
+- [Pre-requisites](#memo-pre-requisites)
+  - [Installing Required Packages](#package-installing-required-packages)
+  - [Software](#floppy_disk-software)
+  - [VPN configuration](#closed_lock_with_key-vpn-configuration)
+  - [Firefox (gecko) driver](#fox_face-firefox-gecko-driver)
+- [Usage](#desktop_computer-usage)
+  - [Redirect Chain Examples](#chains-redirect-chain-examples)
+  - [Check HTTP Status Code Examples](#traffic_light-check-http-status-code-examples)
+- [Development](#toolbox-development)
+  - [Virtual environment](#office-virtual-environment)
+- [To-Do](#ballot_box_with_check-to-do)
 
 
 ---
-## Pre-requisites
+## :memo: Pre-requisites
 
 - clone this project with the following command
 
@@ -25,11 +28,17 @@
 $ git clone https://github.com/martinkubecka/redSnooper.git
 ```
 
-### Software
+### :package: Installing Required Packages
+
+```
+$ pip install -r requirements.txt
+```
+
+### :floppy_disk: Software
 
 - user your package manager to install [Tor](https://community.torproject.org/onion-services/setup/install/) and [OpenVPN](https://community.openvpn.net/openvpn/wiki/HOWTO#InstallingOpenVPN)
 
-### VPN configuration
+### :closed_lock_with_key: VPN configuration
 
 1. get a [NordVPN](https://nordvpn.com/) account
 2. download and unzip NordVPN configuration files for OpenVPN manual setup in to the `config` directory 
@@ -49,7 +58,7 @@ config$ find ovpn_tcp/ -type f -name "*nordvpn.com.tcp.ovpn" -print0 | xargs -0 
 config$ rm vpn_login.txt
 ```
 
-### Firefox (gecko) driver
+### :fox_face: Firefox (gecko) driver
 
 1. download the latest release of **geckodriver** from https://github.com/mozilla/geckodriver/releases
 2. extract the file
@@ -63,7 +72,40 @@ $ chmod +x geckodriver
 $ sudo mv geckodriver /usr/local/bin/
 ```
 
-### Virtual environment
+## :desktop_computer: Usage
+
+```
+usage: redSnooper.py [-h] -u URL [-n OPTION] [-c COUNTRY] [-a OPTION] [-v LEVEL] [--check]
+
+Redirect chain analysis tool with random user agents supporting VPN and TOR as a network configuration
+
+options:
+  -h, --help                      show this help message and exit
+  -u URL, --url URL               URL for analysis (use double quotes)
+  -n OPTION, --network OPTION     network configuration option [VPN/TOR] (default: current network configuration)
+  -c COUNTRY, --country COUNTRY   VPN country [SK/FR/US] (required if VPN is selected)
+  -a OPTION, --user-agent OPTION  user agent [Desktop/Android/iOS] (default: Desktop)
+  -v LEVEL, --verbosity LEVEL     redirect chain verbosity [0/1] (default: 0)
+  --check                         check HTTP status code
+```
+
+### :chains: Redirect Chain Examples
+
+- [Current network configuration](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/no_configuration_example.md)
+- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/vpn_example.md)
+- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/tor_example.md)
+
+### :traffic_light: Check HTTP Status Code Examples
+
+- [Current network configuration](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/no_configuration_example.md)
+- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/vpn_example.md)
+- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/tor_example.md)
+
+
+---
+## :toolbox: Development
+
+### :office: Virtual environment
 
 1. use your package manager to install `python-pip` if it is not present on your system
 3. install `virtualenv`
@@ -81,37 +123,8 @@ $ source venv/bin/activate
 $ deactivate
 ```
 
-## Usage
-
-```
-usage: redSnooper.py [-h] -u URL [-n OPTION] [-c COUNTRY] [-a OPTION] [-v LEVEL] [--check]
-
-Redirect chain analysis tool with random user agents supporting VPN and TOR as a network configuration
-
-options:
-  -h, --help                      show this help message and exit
-  -u URL, --url URL               URL for analysis (use double quotes)
-  -n OPTION, --network OPTION     network configuration option [VPN/TOR] (default: current network configuration)
-  -c COUNTRY, --country COUNTRY   VPN country [SK/FR/US] (required if VPN is selected)
-  -a OPTION, --user-agent OPTION  user agent [Desktop/Android/iOS] (default: Desktop)
-  -v LEVEL, --verbosity LEVEL     redirect chain verbosity [0/1] (default: 0)
-  --check                         check HTTP status code
-```
-
-### Redirect Chain Examples
-
-- [Current network configuration](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/no_configuration_example.md)
-- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/vpn_example.md)
-- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/tor_example.md)
-
-### Check HTTP Status Code Examples
-
-- [Current network configuration](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/no_configuration_example.md)
-- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/vpn_example.md)
-- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/tor_example.md)
-
 ---
-## To-Do
+## :ballot_box_with_check: To-Do
 
 - [ ] load multiple URLs from file for HTTP status code check
 - [ ] add additional verbosity level to hide js/css/etc. files
@@ -120,3 +133,9 @@ options:
 - [ ] change loading VPN configurations from a json file to dynamically loading paths
 - [ ] support more countries with VPN servers 
 - [ ] implement proper whitelist domain filtering
+
+---
+
+<div align="right">
+<a href="#table-of-contents">[ Table of Contents ]</a>
+</div>
