@@ -2,8 +2,6 @@ selenium-wire
 random_user_agent
 requests
 stem
-flask
-flask-cors
 PyYAML
 colorama
 tldextract

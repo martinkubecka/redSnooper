@@ -12,9 +12,7 @@ from seleniumwire import webdriver
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import SoftwareName, OperatingSystem
 
-from tor_runner import TorClient
-
-# TODO : change printing errors to logger
+from web_collector.tor_runner import TorClient
 
 
 def get_random_user_agent(user_agent_host):
@@ -43,9 +41,20 @@ def get_random_user_agent(user_agent_host):
 
 
 def get_vpn_servers():
+    ##################### TESTING random vpn config #####################
+    # import random
+    # import os
+    # import sys
+
+    # ovpn_tcp_configs = f"{os.path.dirname(os.path.realpath(sys.argv[0]))}/config/ovpn_tcp/"
+    # ovpn_udp_configs = f"{os.path.dirname(os.path.realpath(sys.argv[0]))}/config/ovpn_udp/"
+    # random_vpn_config = random.choice(os.listdir(ovpn_tcp_configs))
+    # vpn_config_path = f"{ovpn_tcp_configs}{random_vpn_config}"
+    # print(vpn_config_path)
+
     # https://nordvpn.com/servers/tools/
     # https://nordvpn.com/ovpn/
-    with open("vpn_servers.json", "r") as file:
+    with open("config/vpn_servers.json", "r") as file:
         vpn_servers = json.load(file)
     return vpn_servers
 
@@ -69,25 +78,18 @@ def is_program_installed(program_name):
 
 
 def load_config():
-    with open(".config.yml", "r") as ymlfile:
+    with open("config/.config.yml", "r") as ymlfile:
         config = yaml.safe_load(ymlfile)
     return config
 
 
-def application_mode():
-    if os.path.exists("/.dockerenv"):
-        if os.path.isdir("/app"):
-            return True
-    return False
-
-
 def get_domain_whitelist():
-    with open('domains.txt', 'r') as file:
+    with open('helpers/domains.txt', 'r') as file:
         domains = file.read().splitlines()
     return domains
 
 
-class ENTITY_WEB_COLLECTOR:
+class WebCollector:
     def __init__(self, network_option, user_agent_host, vpn_country, verbosity):
         self.network_option = network_option   # "MOBILE_DATA", "VPN", "TOR"
         self.proxies = None
@@ -100,14 +102,13 @@ class ENTITY_WEB_COLLECTOR:
         self.socks_port = None
         self.driver = None
         self.verbosity = verbosity
-        self.docker_mode = application_mode()
         self.domain_whitelist = get_domain_whitelist()
 
     def initialize_network(self):
         network_option = self.network_option
 
-        if network_option == "MOBILE_DATA":
-            print("[*] Using MOBILE DATA for network configuration")
+        if network_option == "NONE":
+            print("[*] Using current network configuration")
 
         elif network_option == "VPN":
             print("[*] Using VPN for network configuration")
@@ -133,23 +134,20 @@ class ENTITY_WEB_COLLECTOR:
                     fr_vpn_list = vpn_servers['vpn_servers']['France']
                     random_vpn_server = random.choice(fr_vpn_list)
 
-                elif self.vpn_country == "United_States":
+                elif self.vpn_country == "United States":
                     us_vpn_list = vpn_servers['vpn_servers']['United_States']
                     random_vpn_server = random.choice(us_vpn_list)
 
                 try:
                     print(
                         f"[*] Connecting to '{self.vpn_country}'")
-
-                    if self.docker_mode:
-                        connect_cmd = f"openvpn --daemon --config {random_vpn_server} &"
-                    else:
-                        connect_cmd = f"sudo openvpn --daemon --config {random_vpn_server} &"
+                    connect_cmd = f"sudo openvpn --daemon --config {random_vpn_server} &"
                 except:
                     print(
                         f"{Fore.RED}[!] Error encountered while running '{connect_cmd}'{Fore.RESET}")
                     self.stop_network()
                     print(f"\nExiting program ...\n")
+                    exit(1)
                 os.system(connect_cmd)
 
         elif network_option == "TOR":
@@ -169,26 +167,22 @@ class ENTITY_WEB_COLLECTOR:
                 self.proxies = self.tor.proxies
                 self.socks_port = self.tor.socks_port
                 try:
+                    print(f"[*] Initiating Tor bootstrapping")
                     self.tor.start_tor()
                 except:
                     print(
                         f"{Fore.RED}[!] Error encountered while establishing a Tor circuit{Fore.RESET}")
                     self.stop_network()
                     print(f"\nExiting program ...\n")
+                    exit(1)
 
     def stop_network(self):
         if self.network_option == "VPN":
             print(f"[*] Closing network connection via VPN ...\n")
-            if self.docker_mode:
-                os.system("pkill -9 openvpn")
-            else:
-                os.system("sudo pkill -9 openvpn")
+            os.system("sudo pkill -9 openvpn")
         if self.network_option == "TOR":
             print(f"[*] Closing network connection via Tor ...\n")
-            if self.docker_mode:
-                os.system("pkill -9 tor")
-            else:
-                os.system("sudo pkill -9 tor")
+            os.system("sudo pkill -9 tor")
 
     def check_ip(self):
         ip_check_urls = ["https://api.myip.com",
@@ -293,15 +287,23 @@ class ENTITY_WEB_COLLECTOR:
                     if not any(domain in entry for entry in self.domain_whitelist):
                         print(request.url)
                         redirect_chain.append(request.url)
-                else: # print all the entries from the redirect chain
+                else:  # print all the entries from the redirect chain
                     print(request.url)
                     redirect_chain.append(request.url)
 
         print(f"\n[*] Writing redirect chain URLs to a file")
-        with open('redirect_chain_urls.txt', 'w') as chain_file:
+        with open('report/redirect_chain_urls.txt', 'w') as chain_file:
             for entry in redirect_chain:
                 chain_file.write(f"{entry}\n")
 
         print(f"[*] Writing captured data to a HAR file")
-        with open('response.har', 'w') as har_file:
+        with open('report/response.har', 'w') as har_file:
             print(self.driver.har, file=har_file)
+
+    def check(self, url):
+        print(
+            f"\n{Fore.YELLOW}[*] Checking HTTP status code for '{url}'{Fore.RESET}")
+        requests.packages.urllib3.disable_warnings()
+        response = requests.get(url, proxies=self.proxies, verify=False)
+        status = response.status_code
+        print(f"[*] The following HTTP status code was returned: {status}\n")

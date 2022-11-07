@@ -5,30 +5,24 @@
 
 ---
 **Table of Contents**
-- [Local version](#local-version)
-  - [Pre-requisites](#pre-requisites)
+- [Pre-requisites](#pre-requisites)
   - [Software](#software)
   - [VPN configuration](#vpn-configuration)
   - [Firefox (gecko) driver](#firefox-gecko-driver)
-    - [Virtual environment](#virtual-environment)
-  - [Usage](#usage)
-    - [Examples](#examples)
-- [Docker version](#docker-version)
-  - [Pre-requisites](#pre-requisites-1)
-    - [Docker](#docker)
-    - [Docker Compose](#docker-compose)
-    - [VPN configuration](#vpn-configuration-1)
-  - [Usage](#usage-1)
+  - [Virtual environment](#virtual-environment)
+- [Usage](#usage)
+  - [Redirect Chain Examples](#redirect-chain-examples)
+  - [Check HTTP Status Code Examples](#check-http-status-code-examples)
+- [To-Do](#to-do)
+
 
 ---
-## Local version
-
-### Pre-requisites
+## Pre-requisites
 
 - clone this project with the following command
 
 ```
-$ git clone <URL>
+$ git clone https://github.com/martinkubecka/redSnooper.git
 ```
 
 ### Software
@@ -38,24 +32,21 @@ $ git clone <URL>
 ### VPN configuration
 
 1. get a [NordVPN](https://nordvpn.com/) account
-2. download and unzip NordVPN configuration files for OpenVPN manual setup
-3. create 'vpn_login.txt' file in 'web-collector' directory and put your NordVPN credentials (email and password) on the separate lines
-4. run the two `find` commands below to add your 'vpn_login.txt' authentication file to the OpenVPN configuration files
+2. download and unzip NordVPN configuration files for OpenVPN manual setup in to the `config` directory 
+3. create `vpn_login.txt` file in the `config` directory and put your NordVPN credentials (email and password) on the separate lines
+4. copy your `vpn_login.txt` to the `ovpn_udp` and `ovpn_tcp` directories
+5. run the two `find` commands below to add your `vpn_login.txt` authentication file to the OpenVPN configuration files
 
 ```
-$ cd <DIR/web-collector>
-web-collector $ wget https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip -O ovpn.zip 
-web-collector $ unzip ovpn.zip
-web-collector $ rm ovpn.zip
-web-collector $ cp vpn_login.txt ovpn_udp/
-web-collector $ cp vpn_login.txt ovpn_tcp/
-
-web-collector $ find ovpn_udp/ -type f -name "*nordvpn.com.udp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass vpn_login.txt+'
-
-web-collector $ find ovpn_tcp/ -type f -name "*nordvpn.com.tcp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass vpn_login.txt+'
-
-web-collector $ rm vpn_login.txt
-
+$ cd config/
+config$ wget https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip -O ovpn.zip 
+config$ unzip ovpn.zip
+config$ rm ovpn.zip
+config$ cp vpn_login.txt ovpn_udp/
+config$ cp vpn_login.txt ovpn_tcp/
+config$ find ovpn_udp/ -type f -name "*nordvpn.com.udp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass config/ovpn_tcp/vpn_login.txt+'
+config$ find ovpn_tcp/ -type f -name "*nordvpn.com.tcp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass config/ovpn_tcp/vpn_login.txt+'
+config$ rm vpn_login.txt
 ```
 
 ### Firefox (gecko) driver
@@ -72,7 +63,7 @@ $ chmod +x geckodriver
 $ sudo mv geckodriver /usr/local/bin/
 ```
 
-#### Virtual environment
+### Virtual environment
 
 1. use your package manager to install `python-pip` if it is not present on your system
 3. install `virtualenv`
@@ -90,72 +81,42 @@ $ source venv/bin/activate
 $ deactivate
 ```
 
-### Usage
+## Usage
 
 ```
-usage: main.py [-h] -u URL [-n OPTION] [-c COUNTRY] [-a OPTION] [-v LEVEL]
+usage: redSnooper.py [-h] -u URL [-n OPTION] [-c COUNTRY] [-a OPTION] [-v LEVEL] [--check]
 
 Redirect chain analysis tool with random user agents supporting VPN and TOR as a network configuration
 
 options:
-  -h, --help            show this help message and exit
-  -u URL, --url URL     URL for analysis (use double quotes)
-  -n OPTION, --network OPTION
-                        network configuration option [MOBILE/VPN/TOR] (default: MOBILE)
-  -c COUNTRY, --country COUNTRY
-                        VPN country [SK/FR/US] (required if VPN is selected)
-  -a OPTION, --user-agent OPTION
-                        user agent [Desktop/Android/iOS] (default: Desktop)
-  -v LEVEL, --verbosity LEVEL
-                        redirect chain verbosity [0/1] (default: 0)
-
+  -h, --help                      show this help message and exit
+  -u URL, --url URL               URL for analysis (use double quotes)
+  -n OPTION, --network OPTION     network configuration option [VPN/TOR] (default: current network configuration)
+  -c COUNTRY, --country COUNTRY   VPN country [SK/FR/US] (required if VPN is selected)
+  -a OPTION, --user-agent OPTION  user agent [Desktop/Android/iOS] (default: Desktop)
+  -v LEVEL, --verbosity LEVEL     redirect chain verbosity [0/1] (default: 0)
+  --check                         check HTTP status code
 ```
 
-#### Examples
+### Redirect Chain Examples
 
-- [Mobile Data](https://github.com/martinkubecka/redSnooper/blob/main/docs/mobile_data_example.md)
-- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/vpn_example.md)
-- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/tor_example.md)
+- [Current network configuration](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/no_configuration_example.md)
+- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/vpn_example.md)
+- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/redirect_chain/tor_example.md)
+
+### Check HTTP Status Code Examples
+
+- [Current network configuration](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/no_configuration_example.md)
+- [VPN](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/vpn_example.md)
+- [TOR](https://github.com/martinkubecka/redSnooper/blob/main/docs/check/tor_example.md)
 
 ---
-## Docker version
+## To-Do
 
-### Pre-requisites
-
-- clone this project with the following command
-
-```
-$ git clone <URL>
-```
-
-#### Docker
-
-- user your package manager to install [Docker](https://docs.docker.com/engine/install/)
-
-#### Docker Compose
-
-1. download the latest **Docker Compose** release and named it `docker-compose`
-    - https://github.com/docker/compose
-2. add execution to the binary
-3. move the binary to the `/usr/local/bin/` directory
-4. verify the installation by checking the version
-
-```
-$ sudo chmod +x docker-compose
-$ sudo mv docker-compose /usr/local/bin/
-$ docker-compose --version
-```
-
-#### VPN configuration
-
-- get a [NordVPN](https://nordvpn.com/) account
-
-
-### Usage
-
-- run `docker-compose up -d` command inside the `readSnooper` directory where the `docker-compose.yml` file is located
-- run `curl http://127.0.0.1:3000/status` to verify if the container is running
-
-> TODO ?Flask?
-
----
+- [ ] load multiple URLs from file for HTTP status code check
+- [ ] add additional verbosity level to hide js/css/etc. files
+- [ ] implement logging
+- [ ] support CIDR notation for checking forbidden IP addresses
+- [ ] change loading VPN configurations from a json file to dynamically loading paths
+- [ ] support more countries with VPN servers 
+- [ ] implement proper whitelist domain filtering
