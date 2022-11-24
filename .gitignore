@@ -1,9 +1,8 @@
-geckodriver.log
+__pycache__
 venv
-config/.config.yml
+reports
+logs
+config/config.yml
 config/ovpn_tcp
 config/ovpn_udp
 config/vpn_login.txt
-web_collector/__pycache__
-report/response.har
-report/redirect_chain_urls.txt

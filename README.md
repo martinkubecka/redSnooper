@@ -48,14 +48,14 @@ $ pip install -r requirements.txt
 
 ```
 $ cd config/
-config$ wget https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip -O ovpn.zip 
-config$ unzip ovpn.zip
-config$ rm ovpn.zip
-config$ cp vpn_login.txt ovpn_udp/
-config$ cp vpn_login.txt ovpn_tcp/
-config$ find ovpn_udp/ -type f -name "*nordvpn.com.udp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass config/ovpn_tcp/vpn_login.txt+'
-config$ find ovpn_tcp/ -type f -name "*nordvpn.com.tcp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass config/ovpn_tcp/vpn_login.txt+'
-config$ rm vpn_login.txt
+[config]$ wget https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip -O ovpn.zip 
+[config]$ unzip ovpn.zip
+[config]$ rm ovpn.zip
+[config]$ cp vpn_login.txt ovpn_udp/
+[config]$ cp vpn_login.txt ovpn_tcp/
+[config]$ find ovpn_udp/ -type f -name "*nordvpn.com.udp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass config/ovpn_tcp/vpn_login.txt+'
+[config]$ find ovpn_tcp/ -type f -name "*nordvpn.com.tcp.ovpn" -print0 | xargs -0 sed -i 's+auth-user-pass+auth-user-pass config/ovpn_tcp/vpn_login.txt+'
+[config]$ rm vpn_login.txt
 ```
 
 ### :fox_face: Firefox (gecko) driver
@@ -72,6 +72,7 @@ $ chmod +x geckodriver
 $ sudo mv geckodriver /usr/local/bin/
 ```
 
+---
 ## :desktop_computer: Usage
 
 ```
@@ -127,8 +128,6 @@ $ deactivate
 ## :ballot_box_with_check: To-Do
 
 - [ ] load multiple URLs from file for HTTP status code check
-- [ ] add additional verbosity level to hide js/css/etc. files
-- [ ] implement logging
 - [ ] support CIDR notation for checking forbidden IP addresses
 - [ ] change loading VPN configurations from a json file to dynamically loading paths
 - [ ] support more countries with VPN servers 

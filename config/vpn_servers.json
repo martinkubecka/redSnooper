@@ -36,7 +36,7 @@
                 "config/ovpn_tcp/fr551.nordvpn.com.tcp.ovpn",
                 "config/ovpn_tcp/fr552.nordvpn.com.tcp.ovpn"
             ],
-            "United_States": [
+            "United States": [
                 "config/ovpn_tcp/us9579.nordvpn.com.tcp.ovpn",
                 "config/ovpn_tcp/us9578.nordvpn.com.tcp.ovpn",
                 "config/ovpn_tcp/us9580.nordvpn.com.tcp.ovpn",
